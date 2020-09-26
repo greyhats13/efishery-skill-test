@@ -1,0 +1,23 @@
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: go-demo
+  namespace: sit
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # nginx.ingress.kubernetes.io/cors-allow-headers: 'x-app-version,x-api-key,Authorization'
+    # nginx.ingress.kubernetes.io/server-snippet: |-
+    #   location ~* ^/(metrics|health|liveness|debug) {
+    #   error_page 404 /404.html;
+    #   }
+    #   if ($http_user_agent !~* "(okhttp|Go-http|Java|axisnet|Postman)" ) { 
+    #     return 405; 
+    #   }
+spec:
+  rules:
+    - host: go-demo.dev.api.efishery.com
+      http:
+        paths:
+          - backend:
+              serviceName: go-demo
+              servicePort: 8080
