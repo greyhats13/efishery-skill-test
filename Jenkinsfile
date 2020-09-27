@@ -11,7 +11,7 @@ podTemplate(
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
 
-        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.14.10', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true),
     ],
     volumes: [
         //the mounting for container
@@ -42,10 +42,8 @@ podTemplate(
             }
         }
         stage("Deployment") {
-            container('kubectl') {
-                withKubeConfig([credentialsId: 'mykubeconfig', serverUrl: 'https://A170947A4D9A7BFF6E113FF061CFC7E3.yl4.ap-southeast-1.eks.amazonaws.com']) {
-                    sh 'kubectl -n sit apply -f deployment.yaml'
-                }
+            container('helm') {
+                    sh 'helm -n sit upgrade --install go-latest .'
             }
         }
     }

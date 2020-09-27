@@ -1,0 +1,105 @@
+# Default values for balance.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+
+image:
+  repository: greyhats13/demo:latest
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+  dstPort: 8080
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: go-latest.sit.api.axis.co.id
+      paths: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaller:
+  replicas:
+    min: 2
+    max: 20
+  utilization:
+    cpu: 75
+    memory: 75
+
+livenessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /liveness
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 3
+
+readinessProbe:
+  failureThreshold: 3
+  httpGet:
+    path: /health
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 3
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+    # name: axisnet-sa
+    # namespace: axisnet
+    # secrets:
+    # - name: axisnet-secret
+
+# podSecurityContext: {}
+  # fsGroup: 2000
+
+# securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+    # kubernetes.io/tls-acme: "true"
+  # hosts:
+  #   - host: chart-example.local
+  #     paths: []
+  # tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+nodeSelector:
+  target: axisnet-sit-cluster
+
+# tolerations: []
+
+# affinity: {}
