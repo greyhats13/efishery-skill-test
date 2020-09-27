@@ -52,6 +52,7 @@ podTemplate(
         //         deployKubernetes(docker_username: docker_username, image_name: image_name, image_version: version)
         //     }
         // }
+    }
 }
 
 
