@@ -378,7 +378,7 @@ master:
   overwriteJobs: false
 
   ingress:
-    enabled: false
+    enabled: true
     # Override for the default paths that map requests to the backend
     paths: []
     # - backend:
@@ -393,17 +393,17 @@ master:
     apiVersion: "extensions/v1beta1"
     labels: {}
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+    #   cert-manager.io/cluster-issuer: letsencrypt-sit
       kubernetes.io/ingress.class: nginx
-      kubernetes.io/tls-acme: "true"
+    #   kubernetes.io/tls-acme: "true"
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
-    hostName: jenkins.efishery.com
+    hostName: jenkins.sit.api.axis.co.id
     tls:
-      - secretName: jenkins-tls
-        hosts:
-          - jenkins.efishery.com
+    #   - secretName: jenkins-tls
+    #     hosts:
+    #       - jenkins.sit.api.axis.co.id
 
   # If you're running on GKE and need to configure a backendconfig
   # to finish ingress setup, use the following values.
@@ -439,7 +439,7 @@ master:
   prometheus:
     # If enabled, add the prometheus plugin to the list of plugins to install
     # https://plugins.jenkins.io/prometheus
-    enabled: false
+    enabled: true
     # Additional labels to add to the ServiceMonitor object
     serviceMonitorAdditionalLabels: {}
     # Set a custom namespace where to deploy ServiceMonitor resource
