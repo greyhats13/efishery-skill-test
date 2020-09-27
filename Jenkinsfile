@@ -11,7 +11,7 @@ podTemplate(
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
 
-        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true),
+        // containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true),
     ],
     volumes: [
         //the mounting for container
@@ -34,18 +34,21 @@ podTemplate(
             }
         }
 
-        stage('Push & Deploy') {
+        stage('Push Container') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
                     dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
                 }
             }
         }
-        // stage("Deployment") {
-        //     container('helm') {
-        //             sh 'helm -n sit upgrade --install go-latest .'
-        //     }
-        // }
+
+        stage('Deploy') {
+            container('docker') {
+                docker.withRegistry("", docker_creds) {
+                    sh "kubectl -n sit apply -f deployment.yaml"
+                }
+            }
+        }
     }
 }
 
@@ -58,5 +61,4 @@ def dockerBuild(Map args) {
 def dockerPushTag(Map args) {
     sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
-    sh "kubectl -n sit apply -f deployment.yaml"
 }
