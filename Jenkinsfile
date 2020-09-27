@@ -13,7 +13,7 @@ podTemplate(
 
         containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.19.2', command: 'cat', ttyEnabled: true),
         
-        containerTemplate(name: 'helm', image: 'alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
