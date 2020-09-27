@@ -11,7 +11,7 @@ podTemplate(
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
 
-        //containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.3', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.3', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
@@ -42,9 +42,9 @@ podTemplate(
             }
         }
         stage("Deployment") {
-            // container('docker') {
-            //     deployKubernetes(docker_username: docker_username, image_name: image_name, image_version: version)
-            // }
+            container('kubectl') {
+                deployKubernetes()
+            }
         }
     }
 }
@@ -60,12 +60,6 @@ def dockerPushTag(Map args) {
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
 }
 
-
-//function to deploy helm chart to spinnaker by triggering the spinnaker pipeline via webhook, and wait for the spinnaker to trigger jenkins back when deployment is done.
-// def deployKubernetes(Map args) {
-//     def hook = registerWebhook()
-//     echo "Hi Spinnaker!"
-//     sh "curl ${args.spinnaker_webhook}-${args.version} -X POST -H 'content-type: application/json' -d '{ \"parameters\": { \"jenkins-url\": \"${hook.getURL()}\" }}'"
-//     def data = waitForWebhook hook
-//     echo "Webhook called with data: ${data}"
-// }
+def deployKubernetes() {
+    sh "kubectl -n cicd apply -f deployment.yaml"
+}
