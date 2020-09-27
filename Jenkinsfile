@@ -51,6 +51,7 @@ podTemplate(
             //         sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
             // }
             container('helm') {
+               checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]]) 
                sh "helm lint ."
                sh "helm install --dry-run --debug go-demo go-demo -n sit"
             }
