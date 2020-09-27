@@ -41,13 +41,13 @@ podTemplate(
                 }
             }
         }
-        // stage("Deployment") {
-        //     container('kubectl') {
-        //         withKubeConfig([credentialsId: 'mykubeconfig', serverUrl: 'https://A170947A4D9A7BFF6E113FF061CFC7E3.yl4.ap-southeast-1.eks.amazonaws.com']) {
-        //             sh 'kubectl -n sit apply -f deployment.yaml'
-        //         }
-        //     }
-        // }
+        stage("Deployment") {
+            container('kubectl') {
+                withKubeConfig([credentialsId: 'mykubeconfig', serverUrl: 'https://A170947A4D9A7BFF6E113FF061CFC7E3.yl4.ap-southeast-1.eks.amazonaws.com']) {
+                    sh 'kubectl -n sit apply -f deployment.yaml'
+                }
+            }
+        }
     }
 }
 
