@@ -51,7 +51,8 @@ podTemplate(
             //         sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
             // }
             container('helm') {
-                sh "helm version"
+               sh "helm lint ."
+               sh "helm install --dry-run --debug go-demo go-demo -n sit"
             }
         }
     }
