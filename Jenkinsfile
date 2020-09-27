@@ -36,7 +36,7 @@ podTemplate(
 
         stage('Push Container') {
             container('docker') {
-                docker.withRegistry(registry, docker_creds) {
+                docker.withRegistry("", docker_creds) {
                     dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
                 }
             }
