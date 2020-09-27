@@ -1,5 +1,7 @@
 FROM golang:1.14.0 AS builder
 
+RUN apk update && apk add --no-cache git
+
 WORKDIR $GOPATH/src/efishery/
 
 COPY . .
