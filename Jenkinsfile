@@ -6,7 +6,8 @@ def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
-    label: "slave", serviceAccount "jenkins",
+    label: "slave", 
+    serviceAccount: "jenkins",
     containers: [
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
