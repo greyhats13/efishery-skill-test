@@ -43,7 +43,8 @@ podTemplate(
         }
         stage("Deployment") {
             container('kubectl') {
-                deployKubernetes()
+                withKubeConfig([credentialsId: 'mykubeconfig', serverUrl: 'https://A170947A4D9A7BFF6E113FF061CFC7E3.yl4.ap-southeast-1.eks.amazonaws.com']) {
+                    sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
@@ -58,8 +59,4 @@ def dockerBuild(Map args) {
 def dockerPushTag(Map args) {
     sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
-}
-
-def deployKubernetes() {
-    sh "kubectl -n cicd apply -f deployment.yaml"
 }
