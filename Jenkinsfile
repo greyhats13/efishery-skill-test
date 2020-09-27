@@ -38,13 +38,11 @@ podTemplate(
             }
         }
 
-        // stage('Push Container') {
-        //     container('docker') {
-        //         docker.withRegistry("https://${docker_username}", ecr_credentialsId) {
-        //             dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
-        //         }
-        //     }
-        // }
+        stage('Push Container') {
+            container('docker') {
+                dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
+            }
+        }
         // stage("Deployment") {
         //     container('docker') {
         //         deployKubernetes(docker_username: docker_username, image_name: image_name, image_version: version)
@@ -59,10 +57,10 @@ def dockerBuild(Map args) {
     sh "docker build -t ${args.image_name}:${args.image_version} ."
 }
 
-// def dockerPushTag(Map args) {
-//     sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
-//     sh "docker push ${args.image_name}:${args.dstVersion}"
-// }
+def dockerPushTag(Map args) {
+    sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+    sh "docker push ${args.image_name}:${args.dstVersion}"
+}
 
 
 //function to deploy helm chart to spinnaker by triggering the spinnaker pipeline via webhook, and wait for the spinnaker to trigger jenkins back when deployment is done.
