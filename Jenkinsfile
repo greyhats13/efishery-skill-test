@@ -6,14 +6,17 @@ def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
-    label: fullname,
+    label: "slave",
     containers: [
         //container template to perform docker build and docker push operation
-        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
-
-        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.19.2', command: 'cat', ttyEnabled: true),
-        
-        containerTemplate(name: 'helm', image: 'dtzar/helm-kubectl:latest', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true, alwaysPullImage: false, workingDir: '/home/jenkins/agent', resourceRequestCpu: '50m',
+        resourceLimitCpu: '100m',
+        resourceRequestMemory: '100Mi',
+        resourceLimitMemory: '200Mi',),
+        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true, alwaysPullImage: false, workingDir: '/home/jenkins/agent', resourceRequestCpu: '50m',
+        resourceLimitCpu: '100m',
+        resourceRequestMemory: '100Mi',
+        resourceLimitMemory: '200Mi',)
     ],
     volumes: [
         //the mounting for container
@@ -30,15 +33,12 @@ podTemplate(
             //define version and helm directory
         }
         //use container slave for docker to perform docker build and push
-        stage('Build Container') {
-            container('docker') {
-                dockerBuild(image_name: image_name, image_version: "debug")
-            }
-        }
-
-        stage('Push Container') {
-            container('docker') {
-                docker.withRegistry("", docker_creds) {
+        container('docker') {
+            docker.withRegistry("", docker_creds) {
+                stage('Build Container') {
+                    dockerBuild(image_name: image_name, image_version: "debug")
+                }
+                stage('Push Container') {
                     dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
                 }
             }
@@ -51,7 +51,6 @@ podTemplate(
             //         sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
             // }
             container('helm') {
-               checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]]) 
                sh "helm lint ."
                sh "helm install --dry-run --debug go-demo go-demo -n sit"
             }
