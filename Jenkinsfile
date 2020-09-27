@@ -26,10 +26,10 @@ podTemplate(
 
     node(fullname) {
         stage("Checkout") {
-            runPipeline = 'dev'
+            runPipeline = '*/master'
             //checkout process to Source Code Management
-            def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'github-auth-token', url: repo_url]]])
-            echo "Running UAT Pipeline with ${scm.GIT_BRANCH} branch"
+            def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
+            echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
             //define version and helm directory
             version     = "debug"
         }
