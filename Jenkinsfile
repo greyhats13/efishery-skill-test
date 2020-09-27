@@ -3,7 +3,6 @@ def service_name        = "go-demo"
 def repo_name           = "efishery-skill-test"
 def repo_url            = "https://github.com/greyhats13/${repo_name}.git"
 def docker_username     = "greyhats13"
-def registry            = "greyhats13/demo"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
