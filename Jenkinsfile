@@ -11,7 +11,7 @@ podTemplate(
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
 
-        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.3', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.19.2', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
