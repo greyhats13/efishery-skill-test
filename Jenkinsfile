@@ -13,7 +13,7 @@ podTemplate(
 
         containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.19.2', command: 'cat', ttyEnabled: true),
         
-        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'helm', image: 'alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
@@ -51,7 +51,7 @@ podTemplate(
             //         sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
             // }
             container('helm') {
-                sh "helm upgrade --install go-latest . -n sit --validate=false"
+                sh "helm version"
             }
         }
     }
