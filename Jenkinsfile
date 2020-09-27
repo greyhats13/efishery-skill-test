@@ -44,7 +44,7 @@ podTemplate(
 
         stage('Deploy') {
             container('kubectl') {
-                    sh "kubectl -n sit apply -f deployment.yaml"
+                    sh "kubectl get pods -n sit"
             }
         }
     }
