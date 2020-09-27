@@ -46,6 +46,7 @@ podTemplate(
             container('helm') {
                sh "helm lint ."
                sh "helm -n sit install ${service_name} . --dry-run --debug"
+               sh "helm -n sit upgrade --install ${service_name} ."
             }
         }
     }
