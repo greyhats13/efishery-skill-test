@@ -6,11 +6,11 @@ def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
-    label: "slave",
+    label: "slave", serviceAccount "jenkins",
     containers: [
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
-        containerTemplate(name: 'docker', image: 'alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'helm', image: 'alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
@@ -41,16 +41,11 @@ podTemplate(
             }
         }
 
-        stage('Deploy') {
+        stage('Helm Linting & DryRun') {
             container('helm') {
-                    sh "kubectl apply -f k8s-deployment/deployment.yaml -n sit --validate=false"
-                    sh "kubectl apply -f k8s-deployment/service.yaml -n sit --validate=false"
-                    sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
+               sh "helm lint ."
+               sh "helm -n sit install ${service_name} . --dry-run --debug"
             }
-            // container('helm') {
-            //    sh "helm lint ."
-            //    sh "helm install --dry-run --debug go-demo go-demo -n sit"
-            // }
         }
     }
 }
