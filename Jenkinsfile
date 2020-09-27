@@ -8,8 +8,7 @@ def repo_url            = "https://github.com/greyhats13/${repo_name}.git"
 def docker_username     = "greyhats13"
 
 // ::INITIALIZATION
-// def fullname            = "${service_name}-${env.BUILD_NUMBER}"
-def version
+def fullname            = "${service_name}"
 podTemplate(
     label: fullname,
     containers: [
@@ -32,7 +31,6 @@ podTemplate(
                 def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
                 echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
                 //define version and helm directory
-                version     = "debug"
             }
         }
         //use container slave for docker to perform docker build and push
