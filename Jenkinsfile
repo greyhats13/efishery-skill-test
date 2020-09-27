@@ -44,9 +44,7 @@ podTemplate(
 
         stage('Deploy') {
             container('kubectl') {
-                docker.withRegistry("", docker_creds) {
                     sh "kubectl -n sit apply -f deployment.yaml"
-                }
             }
         }
     }
