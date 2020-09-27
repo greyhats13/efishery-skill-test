@@ -6,17 +6,12 @@ def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
-    label: "slave",
+    label: fullname,
     containers: [
         //container template to perform docker build and docker push operation
-        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true, alwaysPullImage: false, workingDir: '/home/jenkins/agent', resourceRequestCpu: '50m',
-        resourceLimitCpu: '100m',
-        resourceRequestMemory: '100Mi',
-        resourceLimitMemory: '200Mi',),
-        containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true, alwaysPullImage: false, workingDir: '/home/jenkins/agent', resourceRequestCpu: '50m',
-        resourceLimitCpu: '100m',
-        resourceRequestMemory: '100Mi',
-        resourceLimitMemory: '200Mi',)
+        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
+        
+        containerTemplate(name: 'helm', image: 'dtzar/helm-kubectl:latest', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
@@ -33,12 +28,15 @@ podTemplate(
             //define version and helm directory
         }
         //use container slave for docker to perform docker build and push
-        container('docker') {
-            docker.withRegistry("", docker_creds) {
-                stage('Build Container') {
-                    dockerBuild(image_name: image_name, image_version: "debug")
-                }
-                stage('Push Container') {
+        stage('Build Container') {
+            container('docker') {
+                dockerBuild(image_name: image_name, image_version: "debug")
+            }
+        }
+
+        stage('Push Container') {
+            container('docker') {
+                docker.withRegistry("", docker_creds) {
                     dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
                 }
             }
