@@ -11,7 +11,8 @@ podTemplate(
         //container template to perform docker build and docker push operation
         containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
 
-        // containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true),
+        // containerTemplate(name: 'helm', image: 'docker.io/alpine/helm', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.19.2', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
         //the mounting for container
@@ -44,9 +45,9 @@ podTemplate(
 
         stage('Deploy') {
             container('kubectl') {
-                    sh "kubectl apply -f deployment.yaml -n sit --validate=false"
-                    sh "kubectl apply -f service.yaml -n sit --validate=false"
-                    sh "kubectl apply -f ingress.yaml -n sit --validate=false"
+                    sh "kubectl apply -f k8s-deployment/deployment.yaml -n sit --validate=false"
+                    sh "kubectl apply -f k8s-deployment/service.yaml -n sit --validate=false"
+                    sh "kubectl apply -f k8s-deployment/ingress.yaml -n sit --validate=false"
             }
         }
     }

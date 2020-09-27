@@ -1,7 +1,7 @@
 kind: Ingress
 apiVersion: extensions/v1beta1
 metadata:
-  name: go-demo
+  name: go-latest
   namespace: sit
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -15,9 +15,9 @@ metadata:
     #   }
 spec:
   rules:
-    - host: go-demo.dev.api.efishery.com
+    - host: go-latest.sit.api.axis.co.id
       http:
         paths:
           - backend:
-              serviceName: go-demo
+              serviceName: go-latest
               servicePort: 8080
