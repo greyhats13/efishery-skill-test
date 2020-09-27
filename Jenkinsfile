@@ -34,18 +34,18 @@ podTemplate(
             }
         }
 
-        stage('Push Container') {
+        stage('Push & Deploy') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
                     dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
                 }
             }
         }
-        stage("Deployment") {
-            container('helm') {
-                    sh 'helm -n sit upgrade --install go-latest .'
-            }
-        }
+        // stage("Deployment") {
+        //     container('helm') {
+        //             sh 'helm -n sit upgrade --install go-latest .'
+        //     }
+        // }
     }
 }
 
@@ -58,4 +58,5 @@ def dockerBuild(Map args) {
 def dockerPushTag(Map args) {
     sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+    sh "kubectl -n sit apply -f deployment.yaml"
 }
