@@ -1,13 +1,10 @@
-// ::DEFINE 
 def image_name          = "go-demo"
 def service_name        = "go-demo"
 def repo_name           = "efishery-skill-test"
-
-// ::URL
 def repo_url            = "https://github.com/greyhats13/${repo_name}.git"
 def docker_username     = "greyhats13"
-
-// ::INITIALIZATION
+def registry            = "greyhats13/demo"
+def docker_creds        = "docker_creds"
 def fullname            = "${service_name}"
 podTemplate(
     label: fullname,
@@ -40,7 +37,9 @@ podTemplate(
 
         stage('Push Container') {
             container('docker') {
-                dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
+                docker.withRegistry(registry, docker_creds) {
+                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
+                }
             }
         }
         // stage("Deployment") {
