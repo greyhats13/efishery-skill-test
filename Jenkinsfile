@@ -44,9 +44,9 @@ podTemplate(
 
         stage('Deploy') {
             container('kubectl') {
-                    sh "kubectl apply -f deployment.yaml -n sit"
-                    sh "kubectl apply -f service.yaml -n sit"
-                    sh "kubectl apply -f ingress.yaml -n sit"
+                    sh "kubectl apply -f deployment.yaml -n sit --validate=false"
+                    sh "kubectl apply -f service.yaml -n sit --validate=false"
+                    sh "kubectl apply -f ingress.yaml -n sit --validate=false"
             }
         }
     }
