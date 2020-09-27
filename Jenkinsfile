@@ -25,13 +25,15 @@ podTemplate(
 {
 
     node(fullname) {
-        stage("Checkout") {
-            runPipeline = '*/master'
-            //checkout process to Source Code Management
-            def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
-            echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
-            //define version and helm directory
-            version     = "debug"
+        if (env.GET_TRIGGER == 'dev') {
+            stage("Checkout") {
+                runPipeline = '*/master'
+                //checkout process to Source Code Management
+                def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
+                echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
+                //define version and helm directory
+                version     = "debug"
+            }
         }
         //use container slave for docker to perform docker build and push
         stage('Build Container') {
