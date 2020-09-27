@@ -27,7 +27,7 @@ podTemplate(
     node(fullname) {
         if (env.GET_TRIGGER == 'dev') {
             stage("Checkout") {
-                runPipeline = '*/master'
+                runBranch = '*/master'
                 //checkout process to Source Code Management
                 def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
                 echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
@@ -42,13 +42,13 @@ podTemplate(
             }
         }
 
-        stage('Push Container') {
-            container('docker') {
-                docker.withRegistry("https://${docker_username}", ecr_credentialsId) {
-                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
-                }
-            }
-        }
+        // stage('Push Container') {
+        //     container('docker') {
+        //         docker.withRegistry("https://${docker_username}", ecr_credentialsId) {
+        //             dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
+        //         }
+        //     }
+        // }
         // stage("Deployment") {
         //     container('docker') {
         //         deployKubernetes(docker_username: docker_username, image_name: image_name, image_version: version)
@@ -63,10 +63,10 @@ def dockerBuild(Map args) {
     sh "docker build -t ${args.image_name}:${args.image_version} ."
 }
 
-def dockerPushTag(Map args) {
-    sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
-    sh "docker push ${args.image_name}:${args.dstVersion}"
-}
+// def dockerPushTag(Map args) {
+//     sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+//     sh "docker push ${args.image_name}:${args.dstVersion}"
+// }
 
 
 //function to deploy helm chart to spinnaker by triggering the spinnaker pipeline via webhook, and wait for the spinnaker to trigger jenkins back when deployment is done.
