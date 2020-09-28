@@ -4,12 +4,12 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "go-latest.labels" . | nindent 4 }}
+    {{- include "go-demo.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "go-latest.selectorLabels" . | nindent 6 }}
+      {{- include "go-demo.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -17,7 +17,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
       labels:
-        {{- include "go-latest.selectorLabels" . | nindent 8 }}
+        {{- include "go-demo.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

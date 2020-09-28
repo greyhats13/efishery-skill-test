@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-latest
+  name: go-demo
 spec:
   replicas: 3
   selector:
     matchLabels:
-      name: go-latest
+      name: go-demo
   template:
     metadata:
       labels:
-        name: go-latest
+        name: go-demo
     spec:
       containers:
       - name: application
