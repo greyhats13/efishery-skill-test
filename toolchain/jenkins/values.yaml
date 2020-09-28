@@ -231,14 +231,19 @@ master:
     - credentials-binding:1.23
     - git:4.2.2
     - configuration-as-code:1.41
-
+    - multibranch-action-triggers:1.8.5
+    - multibranch-scan-webhook-trigger:1.8.5
+    - pipeline:2.6
+    - pipeline-github:2.7
+    - git-changelog:3.0
+    - git-parameter:0.9.13
   # List of plugins to install in addition to those listed in master.installPlugins
   additionalPlugins: []
 
   # Enable to initialize the Jenkins master only once on initial installation.
   # Without this, whenever the master gets restarted (Evicted, etc.) it will fetch plugin updates which has the potential to cause breakage.
   # Note that for this to work, `persistence.enabled` needs to be set to `true`
-  initializeOnce: false
+  initializeOnce: true
 
   # Enable to always override the installed plugins with the values of 'master.installPlugins' on upgrade or redeployment.
   # overwritePlugins: true
@@ -279,6 +284,9 @@ master:
     enabled: true
     defaultConfig: true
     configScripts: {}
+    #  welcome-message: |
+    #    jenkins:
+    #      systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
     # Ignored if securityRealm is defined in master.JCasC.configScripts and
     # ignored if master.enableXmlConfig=true as master.securityRealm takes precedence
     securityRealm: |-
@@ -288,9 +296,6 @@ master:
     authorizationStrategy: |-
       loggedInUsersCanDoAnything:
         allowAnonymousRead: false
-    # welcome-message: |
-    #   jenkins:
-    #     systemMessage: Welcome to our CI\CD server.  This Jenkins is configured and managed 'as code'.
   # Optionally specify additional init-containers
   customInitContainers: []
   # - name: custom-init
@@ -304,7 +309,7 @@ master:
       # jcasc changes will cause a reboot and will only be applied at the subsequent start-up.  Auto-reload uses the
       # http://<jenkins_url>/reload-configuration-as-code endpoint to reapply config when changes to the configScripts are detected.
       enabled: true
-      image: kiwigrid/k8s-sidecar:0.1.144
+      image: kiwigrid/k8s-sidecar:0.1.193
       imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
@@ -351,7 +356,8 @@ master:
   # Node labels and tolerations for pod assignment
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
   # ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
-  nodeSelector: {}
+  nodeSelector:
+    doks.digitalocean.com/node-pool: demo
 
   terminationGracePeriodSeconds:
 
@@ -393,17 +399,39 @@ master:
     apiVersion: "extensions/v1beta1"
     labels: {}
     annotations:
-    #   cert-manager.io/cluster-issuer: letsencrypt-sit
       kubernetes.io/ingress.class: nginx
-    #   kubernetes.io/tls-acme: "true"
+      kubernetes.io/tls-acme: "true"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
-    hostName: jenkins.sit.api.axis.co.id
+    hostName: jenkins.blast.co.id
     tls:
-    #   - secretName: jenkins-tls
-    #     hosts:
-    #       - jenkins.sit.api.axis.co.id
+    - secretName: jenkins-tls
+      hosts:
+        - jenkins.blast.co.id
+
+  # often you want to have your controller all locked down and private
+  # but you still want to get webhooks from your SCM
+  # A secondary ingress will let you expose different urls
+  # with a differnt configuration
+  secondaryingress:
+    enabled: false
+    # paths you want forwarded to the backend
+    # ex /github-webhook
+    paths: []
+    # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+    apiVersion: "extensions/v1beta1"
+    labels: {}
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # configures the hostname e.g. jenkins-external.example.com
+    hostName:
+    tls:
+    # - secretName: jenkins-external.example.com
+    #   hosts:
+    #     - jenkins-external.example.com
 
   # If you're running on GKE and need to configure a backendconfig
   # to finish ingress setup, use the following values.
@@ -439,7 +467,7 @@ master:
   prometheus:
     # If enabled, add the prometheus plugin to the list of plugins to install
     # https://plugins.jenkins.io/prometheus
-    enabled: true
+    enabled: false
     # Additional labels to add to the ServiceMonitor object
     serviceMonitorAdditionalLabels: {}
     # Set a custom namespace where to deploy ServiceMonitor resource
@@ -474,8 +502,8 @@ agent:
       cpu: "512m"
       memory: "512Mi"
     limits:
-      cpu: "1000m"
-      memory: "2000Mi"
+      cpu: "512m"
+      memory: "512Mi"
   # You may want to change this to true while testing a new image
   alwaysPullImage: false
   # Controls how agent pods are retained after the Jenkins build completes
@@ -512,7 +540,8 @@ agent:
   envVars: []
   # - name: PATH
   #   value: /usr/local/bin
-  nodeSelector: {}
+  nodeSelector:
+    doks.digitalocean.com/node-pool: demo
   # Key Value selectors. Ex:
   # jenkins-agent: v1
 
@@ -608,7 +637,7 @@ persistence:
   storageClass:
   annotations: {}
   accessMode: "ReadWriteOnce"
-  size: "10Gi"
+  size: "5Gi"
   volumes:
   #  - name: nothing
   #    emptyDir: {}
@@ -642,7 +671,7 @@ rbac:
 serviceAccount:
   create: true
   # The name of the service account is autogenerated by default
-  name:
+  name: jenkins
   annotations: {}
 
 serviceAccountAgent:
@@ -693,11 +722,11 @@ backup:
   #   value: "us-east-1"
   resources:
     requests:
-      memory: 1Gi
-      cpu: 1
+      memory: 200Mi
+      cpu: 200m
     limits:
-      memory: 1Gi
-      cpu: 1
+      memory: 2Gi
+      cpu: 2
   # Destination to store the backup artifacts
   # Supported cloud storage services: AWS S3, Minio S3, Azure Blob Storage, Google Cloud Storage
   # Additional support can added. Visit this repository for details

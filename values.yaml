@@ -98,7 +98,7 @@ serviceAccount:
   #      - chart-example.local
 
 nodeSelector:
-  target: demo-dev-cluster
+  doks.digitalocean.com/node-pool: demo
 
 # tolerations: []
 
