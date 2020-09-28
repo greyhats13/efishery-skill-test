@@ -8,7 +8,7 @@ podAnnotations:
   prometheus.io/scrape: "true"
 
 image:
-  repository: greyhats13/demo:alpha
+  repository: greyhats13/go-demo:alpha
   pullPolicy: Always
 
 nameOverride: ""
