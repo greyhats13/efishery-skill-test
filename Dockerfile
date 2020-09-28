@@ -1,6 +1,6 @@
 FROM golang:1.15.2-alpine3.12 AS builder
 
-RUN cat /etc/resolve.conf
+RUN nameserver 8.8.8.8
 RUN apk update && apk add --no-cache git
 
 WORKDIR $GOPATH/src/efishery/
@@ -11,6 +11,7 @@ RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/demo
 
 FROM alpine:3.12
 
+RUN nameserver 8.8.8.8
 RUN apk add --no-cache tzdata
 
 COPY --from=builder /go/bin/demo /go/bin/demo
