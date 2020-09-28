@@ -1,6 +1,6 @@
 FROM golang:1.15.2-alpine3.12 AS builder
 
-RUN ping dl-cdn.alpinelinux.org
+RUN cat /etc/resolve.conf
 RUN apk update && apk add --no-cache git
 
 WORKDIR $GOPATH/src/efishery/
