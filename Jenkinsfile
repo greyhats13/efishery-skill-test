@@ -10,7 +10,7 @@ podTemplate(
     serviceAccount: "jenkins",
     containers: [
         //container template to perform docker build and docker push operation
-        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'docker', image: 'docker.io/docker', command: 'cat', ttyEnabled: true, alwaysPullImage: true),
         containerTemplate(name: 'helm', image: 'alpine/helm:3.3.4', command: 'cat', ttyEnabled: true)
     ],
     volumes: [
