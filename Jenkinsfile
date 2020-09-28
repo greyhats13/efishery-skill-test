@@ -30,14 +30,14 @@ podTemplate(
         //use container slave for docker to perform docker build and push
         stage('Build Container') {
             container('docker') {
-                dockerBuild(image_name: image_name, image_version: "debug")
+                dockerBuild(image_name: image_name, image_version: "latest")
             }
         }
 
         stage('Push Container') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
-                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "debug", dstVersion: "latest")
+                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: "latest")
                 }
             }
         }
@@ -58,7 +58,6 @@ def dockerBuild(Map args) {
     sh "docker build -t ${args.image_name}:${args.image_version} ."
 }
 
-def dockerPushTag(Map args) {
-    sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
-    sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+def dockerPush(Map args) {
+    sh "docker push ${args.docker_username}/${args.image_name}:${args.srcVersion}"
 }
