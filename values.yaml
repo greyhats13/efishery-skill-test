@@ -29,9 +29,9 @@ ingress:
     - host: go-demo.blast.co.id
       paths: []
   tls:
-  - secretName: go-demo-tls
-    hosts:
-      - go-demo.blast.co.id
+    - secretName: go-demo-tls
+      hosts:
+        - go-demo.blast.co.id
 
 resources:
   limits:
