@@ -11,4 +11,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "go-latest.selectorLabels" . | nindent 4 }}
+    {{- include "go-demo.selectorLabels" . | nindent 4 }}
