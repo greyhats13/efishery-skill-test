@@ -26,5 +26,9 @@ spec:
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
+  tls:
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .Release.Name }}
   {{- end }}
 {{- end }}

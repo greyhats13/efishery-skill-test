@@ -4,9 +4,9 @@ def repo_name           = "efishery-skill-test"
 def repo_url            = "https://github.com/greyhats13/${repo_name}.git"
 def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
-def fullname            = "${service_name}"
+def fullname            = "${service_name}-${env.BUILD_NUMBER}"
 podTemplate(
-    label: "slave", 
+    label: fullname , 
     serviceAccount: "jenkins",
     containers: [
         //container template to perform docker build and docker push operation
@@ -19,25 +19,24 @@ podTemplate(
     ]) 
 {
 
-    node("slave") {
+    node(fullname) {
         stage("Checkout") {
             runBranch = '*/master'
-            //checkout process to Source Code Management
             def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
-            echo "Running Dev Pipeline with ${scm.GIT_BRANCH} branch"
-            //define version and helm directory
         }
+        version = "alpha"
         //use container slave for docker to perform docker build and push
         stage('Build Container') {
             container('docker') {
-                dockerBuild(image_name: image_name, image_version: "latest")
+                dockerBuild(image_name: image_name, image_version: version)
             }
         }
 
         stage('Push Container') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
-                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: "latest")
+                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: version)
+                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: version, dstVersion: "${version}-${BUILD_NUMBER}")
                 }
             }
         }
@@ -52,7 +51,6 @@ podTemplate(
     }
 }
 
-
 //function to perform docker build that is defined in dockerfile
 def dockerBuild(Map args) {
     sh "docker build -t ${args.image_name}:${args.image_version} ."
@@ -60,4 +58,9 @@ def dockerBuild(Map args) {
 
 def dockerPush(Map args) {
     sh "docker push ${args.docker_username}/${args.image_name}:${args.srcVersion}"
+}
+
+def dockerPushTag(Map args) {
+    sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+    sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
 }
