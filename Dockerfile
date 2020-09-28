@@ -1,4 +1,4 @@
-FROM golang:1.14.0-alpine3.11 AS builder
+FROM golang:latest AS builder
 
 RUN apk update && apk add --no-cache git
 
@@ -8,7 +8,7 @@ COPY . .
 
 RUN GOOS=linux GOARCH=amd64 go build -o /go/bin/demo
 
-FROM alpine:3.11
+FROM alpine:latest
 
 RUN apk add --no-cache tzdata
 
