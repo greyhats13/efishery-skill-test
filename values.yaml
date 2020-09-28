@@ -24,7 +24,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   hosts:
-    - host: go-demo.sit.api.axis.co.id
+    - host: go-demo.blast.co.id
       paths: []
 
 resources:
