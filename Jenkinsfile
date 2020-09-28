@@ -5,6 +5,7 @@ def repo_url            = "https://github.com/greyhats13/${repo_name}.git"
 def docker_username     = "greyhats13"
 def docker_creds        = "docker_creds"
 def fullname            = "${service_name}-${env.BUILD_NUMBER}"
+def version             = "alpha"
 podTemplate(
     label: fullname , 
     serviceAccount: "jenkins",
@@ -25,7 +26,7 @@ podTemplate(
             runBranch = '*/master'
             def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
         }
-        version = "alpha"
+
         //use container slave for docker to perform docker build and push
         stage('Build Container') {
             container('docker') {
@@ -36,8 +37,8 @@ podTemplate(
         stage('Push Container') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
-                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: version)
-                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: version, dstVersion: "${version}-${BUILD_NUMBER}")
+                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: "latest")
+                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "latest", dstVersion: "${version}-${BUILD_NUMBER}")
                 }
             }
         }
@@ -58,7 +59,7 @@ def dockerBuild(Map args) {
 }
 
 def dockerPush(Map args) {
-    sh "docker push ${args.docker_username}/${args.image_name}:${args.srcVersion}"
+    sh "docker push ${args.docker_username}/${args.image_name}"
 }
 
 def dockerPushTag(Map args) {
