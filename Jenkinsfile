@@ -62,6 +62,6 @@ def dockerPush(Map args) {
 }
 
 def dockerPushTag(Map args) {
-    sh "docker tag ${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+    sh "docker tag ${args.docker_username}/${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
 }
