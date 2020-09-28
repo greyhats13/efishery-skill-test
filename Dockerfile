@@ -1,5 +1,6 @@
 FROM golang:1.15.2-alpine3.12 AS builder
 
+RUN ping dl-cdn.alpinelinux.org
 RUN apk update && apk add --no-cache git
 
 WORKDIR $GOPATH/src/efishery/
@@ -14,4 +15,4 @@ RUN apk add --no-cache tzdata
 
 COPY --from=builder /go/bin/demo /go/bin/demo
 
-ENTRYPOINT ["/go/bin/demo"]
+ENTRYPOINT ["/go/bin/demo"]s
