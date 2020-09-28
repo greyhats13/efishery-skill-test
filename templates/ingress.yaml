@@ -29,6 +29,6 @@ spec:
   tls:
     - hosts:
         - {{ .host | quote }}
-      secretName: {{ .Release.Name }}
+      secretName: {{ $fullName }}
   {{- end }}
 {{- end }}

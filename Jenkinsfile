@@ -22,7 +22,7 @@ podTemplate(
 
     node(fullname) {
         stage("Checkout") {
-            echo "${service_name}-${env.BUILD_NUMBER}"
+            // echo "${service_name}-${env.BUILD_NUMBER}"
             runBranch = '*/master'
             def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
         }
@@ -37,8 +37,8 @@ podTemplate(
         stage('Push Container') {
             container('docker') {
                 docker.withRegistry("", docker_creds) {
-                    dockerPush(docker_username: docker_username, image_name: image_name, srcVersion: "latest")
-                    dockerPushTag(docker_username: docker_username, image_name: image_name, srcVersion: "latest", dstVersion: "${version}-${BUILD_NUMBER}")
+                    dockerPush(docker_username: docker_username, image_name: image_name)
+                    dockerPushTag(docker_username: docker_username, image_name: image_name, dstVersion: version)
                 }
             }
         }
@@ -63,6 +63,6 @@ def dockerPush(Map args) {
 }
 
 def dockerPushTag(Map args) {
-    sh "docker tag ${args.docker_username}/${args.image_name}:${args.srcVersion} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
+    sh "docker tag ${args.docker_username}/${args.image_name} ${args.docker_username}/${args.image_name}:${args.dstVersion}"
     sh "docker push ${args.docker_username}/${args.image_name}:${args.dstVersion}"
 }
