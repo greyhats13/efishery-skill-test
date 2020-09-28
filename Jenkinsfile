@@ -21,6 +21,7 @@ podTemplate(
 
     node(fullname) {
         stage("Checkout") {
+            echo "${service_name}-${env.BUILD_NUMBER}"
             runBranch = '*/master'
             def scm = checkout([$class: 'GitSCM', branches: [[name: runBranch]], userRemoteConfigs: [[credentialsId: 'git_creds', url: repo_url]]])
         }
@@ -41,7 +42,7 @@ podTemplate(
             }
         }
 
-        stage('Helm Linting & DryRun') {
+        stage('Helm Deploy') {
             container('helm') {
                sh "helm lint ."
                sh "helm -n sit install ${service_name} . --dry-run --debug"
