@@ -14,4 +14,4 @@ RUN apk add tzdata
 
 COPY --from=builder /go/bin/demo /go/bin/demo
 
-ENTRYPOINT ["/go/bin/demo"]s
+ENTRYPOINT ["/go/bin/demo"]
