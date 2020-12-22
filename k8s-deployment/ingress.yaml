@@ -10,7 +10,7 @@ metadata:
     #   location ~* ^/(metrics|health|liveness|debug) {
     #   error_page 404 /404.html;
     #   }
-    #   if ($http_user_agent !~* "(okhttp|Go-http|Java|axisnet|Postman)" ) { 
+    #   if ($http_user_agent !~* "(okhttp|Go-http|Java|Postman)" ) { 
     #     return 405; 
     #   }
 spec:
