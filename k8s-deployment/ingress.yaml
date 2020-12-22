@@ -15,7 +15,7 @@ metadata:
     #   }
 spec:
   rules:
-    - host: go-demo.sit.api.axis.co.id
+    - host: go-demo.blast.co.id
       http:
         paths:
           - backend:
